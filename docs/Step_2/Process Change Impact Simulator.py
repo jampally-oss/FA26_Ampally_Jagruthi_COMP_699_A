@@ -446,3 +446,143 @@ st.caption(
     "This proof of concept uses sample process data and rule-based simulation. "
     "Results show possible effects under the entered conditions; they do not guarantee real-world outcomes."
 )
+
+
+# Advanced analysis features added without removing the existing workflow.
+st.divider()
+st.header("Advanced Process Analysis")
+
+advanced_tab1, advanced_tab2, advanced_tab3 = st.tabs(
+    ["Critical Path", "Dependency Audit", "Scenario Export"]
+)
+
+with advanced_tab1:
+    st.write(
+        "The critical path is the longest chain of dependent activities in the current process. "
+        "It is based on dependency count because the process definition does not contain activity durations."
+    )
+    if nx.is_directed_acyclic_graph(changed_graph) and len(changed_graph.nodes) > 0:
+        topological_nodes = list(nx.topological_sort(changed_graph))
+        longest_distance = {node: 0 for node in topological_nodes}
+        previous_node = {}
+        for node in topological_nodes:
+            for successor in changed_graph.successors(node):
+                candidate_distance = longest_distance[node] + 1
+                if candidate_distance > longest_distance[successor]:
+                    longest_distance[successor] = candidate_distance
+                    previous_node[successor] = node
+
+        end_node = max(longest_distance, key=longest_distance.get)
+        critical_path = [end_node]
+        while critical_path[-1] in previous_node:
+            critical_path.append(previous_node[critical_path[-1]])
+        critical_path.reverse()
+
+        critical_path_df = pd.DataFrame([
+            {
+                "Sequence": index + 1,
+                "ID": node,
+                "Activity": activity_names.get(node, node),
+                "Changed Status": changed_status.get(node, "Unknown"),
+                "Affected by Change": "Yes" if node in affected else "No",
+            }
+            for index, node in enumerate(critical_path)
+        ])
+        st.metric("Activities in longest dependency chain", len(critical_path))
+        st.dataframe(critical_path_df, use_container_width=True, hide_index=True)
+        st.download_button(
+            "Download critical path as CSV",
+            data=critical_path_df.to_csv(index=False),
+            file_name="critical_path.csv",
+            mime="text/csv",
+            key="download_critical_path",
+        )
+    else:
+        st.warning("A critical path cannot be calculated while the process contains circular dependencies.")
+
+with advanced_tab2:
+    st.write("Review every dependency and see whether the source and target activities run in the changed scenario.")
+    dependency_rows = []
+    for dependency in changed_data["dependencies"]:
+        source_id = str(dependency["source"])
+        target_id = str(dependency["target"])
+        dependency_rows.append({
+            "Source ID": source_id,
+            "Source Activity": activity_names.get(source_id, source_id),
+            "Source Status": changed_status.get(source_id, "Unknown"),
+            "Dependency Type": dependency.get("type", "Dependency"),
+            "Target ID": target_id,
+            "Target Activity": activity_names.get(target_id, target_id),
+            "Target Status": changed_status.get(target_id, "Unknown"),
+            "Target Affected": "Yes" if target_id in affected else "No",
+        })
+
+    dependency_audit_df = pd.DataFrame(
+        dependency_rows,
+        columns=[
+            "Source ID", "Source Activity", "Source Status", "Dependency Type",
+            "Target ID", "Target Activity", "Target Status", "Target Affected"
+        ],
+    )
+    st.dataframe(dependency_audit_df, use_container_width=True, hide_index=True)
+
+    skipped_activities = changed_results[changed_results["Status"] == "Skipped"]
+    c1, c2 = st.columns(2)
+    c1.metric("Dependencies", len(dependency_audit_df))
+    c2.metric("Skipped activities", len(skipped_activities))
+    if not skipped_activities.empty:
+        st.subheader("Why activities were skipped")
+        st.dataframe(
+            skipped_activities[["ID", "Activity", "Condition", "Dependencies Met", "Condition Met"]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.download_button(
+        "Download dependency audit as CSV",
+        data=dependency_audit_df.to_csv(index=False),
+        file_name="dependency_audit.csv",
+        mime="text/csv",
+        key="download_dependency_audit",
+    )
+
+with advanced_tab3:
+    st.write("Export the current process definition and the simulation inputs/results together as a reusable JSON scenario.")
+    scenario_export = {
+        "process": changed_data,
+        "simulation_inputs": {
+            "purchase_amount": amount,
+            "overall_approval": "Approved" if approved else "Not approved",
+        },
+        "proposed_change": change,
+        "impact_summary": {
+            "total_activities": len(data["activities"]),
+            "affected_downstream_activities": len(affected),
+            "activities_with_changed_run_status": sum(
+                1 for node in original_status
+                if original_status.get(node) != changed_status.get(node)
+            ),
+        },
+        "original_results": original_results.to_dict(orient="records"),
+        "changed_results": changed_results.to_dict(orient="records"),
+        "comparison": comparison.to_dict(orient="records"),
+    }
+    st.download_button(
+        "Download complete scenario as JSON",
+        data=json.dumps(scenario_export, indent=2, default=str),
+        file_name="process_change_scenario.json",
+        mime="application/json",
+        key="download_complete_scenario",
+    )
+    full_comparison = comparison.merge(
+        changed_results[["ID", "Dependencies Met", "Condition Met", "Output"]],
+        on="ID",
+        how="left",
+    )
+    st.download_button(
+        "Download detailed before-and-after report as CSV",
+        data=full_comparison.to_csv(index=False),
+        file_name="process_change_detailed_report.csv",
+        mime="text/csv",
+        key="download_detailed_report",
+    )
