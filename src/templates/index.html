@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h2>{{ process.name }}</h2>
+  <p>{{ process.description }}</p>
+  <p><strong>Graph check:</strong> {{ graph_valid.message }}</p>
+  <h3>Activities and dependencies</h3>
+  <div class="activity-grid">
+    {% for activity in activities %}
+      <div class="activity {% if activity.code in affected_codes %}affected{% endif %}">
+        <strong>{{ activity.code }} — {{ activity.name }}</strong>
+        <small>Type: {{ activity.activity_type }}</small>
+        {% if activity.code in affected_codes %}<small>Downstream of selected activity</small>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <p class="muted">Dependencies: {% for dep in deps %}{{ dep.source_code }} → {{ dep.target_code }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+</section>
+
+<section class="panel">
+  <h2>Run a sample comparison</h2>
+  <form method="get">
+    <label>Activity to analyze
+      <select name="activity">
+      {% for activity in activities %}
+        <option value="{{ activity.code }}" {% if selected == activity.code %}selected{% endif %}>{{ activity.code }} — {{ activity.name }}</option>
+      {% endfor %}
+      </select>
+    </label>
+    <label>Purchase amount
+      <input type="number" name="amount" min="0" step="0.01" value="{{ amount }}">
+    </label>
+    <label>Original approval threshold
+      <input type="number" name="threshold" min="0" step="0.01" value="{{ threshold }}">
+    </label>
+    <button type="submit">Analyze and compare</button>
+  </form>
+  <p><strong>Downstream activities:</strong>
+    {% if affected_codes %}{{ affected_codes | join(", ") }}{% else %}None found{% endif %}
+  </p>
+</section>
+
+<section class="panel">
+  <h2>Simulation comparison</h2>
+  <div class="columns">
+    <div><h3>Original process</h3><p>{{ original.executed | join(" → ") }}</p></div>
+    <div><h3>Modified scenario</h3><p>{{ changed.executed | join(" → ") }}</p></div>
+  </div>
+  <p><strong>Activities added:</strong> {{ comparison.added_activities | join(", ") if comparison.added_activities else "None" }}</p>
+  <p><strong>Activities skipped:</strong> {{ comparison.skipped_activities | join(", ") if comparison.skipped_activities else "None" }}</p>
+  <p><strong>Final output changed:</strong> {{ "Yes" if comparison.outputs_changed else "No" }}</p>
+</section>
+
+<section class="panel">
+  <h2>JSON impact endpoint</h2>
+  <p>Try <code>/api/process/{{ process.id }}/impact?activity=A2</code> to view downstream results as JSON.</p>
+  <form method="post" action="{{ url_for('reset_sample') }}"><button class="secondary" type="submit">Reset sample workflow</button></form>
+</section>
+{% endblock %}
