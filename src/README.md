@@ -1,39 +1,44 @@
-# Process Change Impact Simulator — Technical Proof of Concept
+# Process Change Impact Simulator — Week 2 Starter
 
-## What this prototype demonstrates
-- Flask web interface and SQLite persistence for a synthetic purchase approval workflow.
-- NetworkX directed graph construction and downstream dependency tracing.
-- Detection of circular dependencies.
-- A simplified deterministic simulation and comparison of original and modified paths.
-- A JSON endpoint for downstream impact results.
-- Automated tests for graph analysis and comparison logic.
+## Selected functional requirements
+This code provides an initial implementation for:
+- FR-01 create a process; FR-02 list processes.
+- FR-05 add activities; FR-09 create dependencies.
+- FR-13 import process JSON; FR-14 validate imported data; FR-15 report invalid/missing fields.
+- FR-17 validate dependency references; FR-18 detect circular dependencies.
+- FR-26 construct a directed dependency graph; FR-27 identify direct downstream activities; FR-28 identify reachable downstream activities; FR-30 distinguish direct/indirect activities; FR-32 return affected activities as a readable JSON list.
 
-## Requirements
-- Python 3.11 or 3.12 recommended.
-- VS Code or another Python editor.
+These are the selected requirements represented by this starter. Remaining requirements are not yet implemented.
 
-## Windows setup
-Open a terminal in this folder:
+## Structure
+`src/process_simulator/` contains database access, SQL schema, repository operations, graph analysis, JSON import validation, and Flask API routes. `tests/` contains automated API tests. `examples/` contains a sample import file.
 
+## Install and run (Windows PowerShell)
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+$env:PYTHONPATH = "src"
 python app.py
 ```
+Open http://127.0.0.1:5000.
 
-Open `http://127.0.0.1:5000` in a browser.
-
-If PowerShell blocks activation, run the app using `.venv\Scripts\python.exe app.py` after installing packages with `.venv\Scripts\python.exe -m pip install -r requirements.txt`.
-
-## Run tests
+## Tests
 ```powershell
+$env:PYTHONPATH = "src"
 pytest -q
 ```
+Run tests before reporting results in the milestone document. Do not claim a test passed unless you have run it.
 
-## JSON endpoint
-Open `/api/process/1/impact?activity=A2` while the app is running.
+## API
+- `POST /api/processes` create a process: `{"name":"Purchase Approval","description":"..."}`
+- `GET /api/processes` list processes.
+- `GET /api/processes/<process_id>` retrieve a process with activities and dependencies.
+- `POST /api/processes/<process_id>/activities` add an activity: `{"name":"Manager Review","activity_type":"approval"}`
+- `POST /api/processes/<process_id>/dependencies` add a dependency: `{"predecessor_id":1,"successor_id":2}`
+- `GET /api/processes/<process_id>/activities/<activity_id>/impact` analyze downstream impact.
+- `POST /api/import` import a JSON process definition; see `examples/sample_process.json`.
 
-## Important limitation
-This is a starter proof of concept, not a complete workflow engine. The demonstration simulator uses fixed activity codes (A1–A6) for the sample purchase workflow. Before presenting it as a complete system, generalize the simulation rules to use each process's stored conditions and dependencies, add proper scenario/version records, and test branching and parallel paths. The sample data is synthetic and does not represent a real organization's process.
+## Notes and limitations
+SQLite database is created automatically in `instance/`. NetworkX represents the directed graph and computes reachability. Cycles are rejected. This is an API-first implementation; it does not yet include a browser workflow editor, change-scenario simulation, visual graph rendering, authentication, report export, or admin screens. Validate all behavior against your actual local run before submitting.
