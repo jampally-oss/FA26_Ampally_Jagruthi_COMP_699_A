@@ -1,0 +1,36 @@
+{
+  "process": {
+    "name": "Purchase Approval Workflow",
+    "description": "Sample process for Week 3 end-to-end demonstration."
+  },
+  "activities": [
+    {
+      "key": "submit",
+      "name": "Submit Purchase Request",
+      "description": "Employee submits a purchase request.",
+      "activity_type": "task"
+    },
+    {
+      "key": "review",
+      "name": "Manager Approval",
+      "description": "Manager reviews and approves the request.",
+      "activity_type": "approval"
+    },
+    {
+      "key": "order",
+      "name": "Create Purchase Order",
+      "description": "Purchasing team creates the order.",
+      "activity_type": "output"
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "submit",
+      "to": "review"
+    },
+    {
+      "from": "review",
+      "to": "order"
+    }
+  ]
+}

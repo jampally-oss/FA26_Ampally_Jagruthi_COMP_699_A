@@ -1,0 +1,17 @@
+{
+  "process": {
+    "name": "Invalid Sample"
+  },
+  "activities": [
+    {
+      "key": "start",
+      "name": "Start"
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "start",
+      "to": "missing"
+    }
+  ]
+}
