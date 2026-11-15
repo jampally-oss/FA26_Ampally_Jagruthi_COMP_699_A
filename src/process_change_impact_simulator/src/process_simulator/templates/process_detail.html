@@ -1,0 +1,248 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ process.name }}{% endblock %}
+
+{% block content %}
+
+<p>
+    <a href="{{ url_for('application.process_list') }}">← All processes</a>
+</p>
+
+<p class="eyebrow">PROCESS #{{ process.id }}</p>
+
+<h1>{{ process.name }}</h1>
+<p class="muted">{{ process.description }}</p>
+
+<div class="grid two">
+
+    <section class="panel">
+        <h2>Add activity</h2>
+
+        <form method="post"
+              action="{{ url_for('application.activity_form', pid=process.id) }}">
+
+            <label>
+                Activity name
+                <input type="text"
+                       name="name"
+                       required
+                       placeholder="e.g. Manager Approval">
+            </label>
+
+            <label>
+                Description
+                <input type="text"
+                       name="description"
+                       placeholder="Optional details">
+            </label>
+
+            <label>
+                Activity type
+                <select name="activity_type" required>
+                    <option value="task">Task</option>
+                    <option value="decision">Decision</option>
+                    <option value="approval">Approval</option>
+                    <option value="output">Output</option>
+                </select>
+            </label>
+
+            <button type="submit">Add activity</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Create dependency</h2>
+
+        {% if activities|length >= 2 %}
+
+        <form method="post"
+              action="{{ url_for('application.dependency_form', pid=process.id) }}">
+
+            <label>
+                Predecessor
+                <select name="predecessor_id" required>
+                    {% for a in activities %}
+                    <option value="{{ a.id }}">
+                        {{ a.name }} (#{{ a.id }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                Successor
+                <select name="successor_id" required>
+                    {% for a in activities %}
+                    <option value="{{ a.id }}">
+                        {{ a.name }} (#{{ a.id }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <button type="submit">Connect activities</button>
+        </form>
+
+        {% else %}
+
+        <p class="muted">
+            Add at least two activities first.
+        </p>
+
+        {% endif %}
+    </section>
+
+</div>
+
+<section class="panel">
+    <h2>Activities and impact analysis</h2>
+
+    {% if activities %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Activity</th>
+                <th>Type</th>
+                <th>Impact analysis</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for a in activities %}
+            <tr>
+                <td>{{ a.id }}</td>
+                <td>{{ a.name }}</td>
+                <td>
+                    <span class="tag">{{ a.activity_type }}</span>
+                </td>
+                <td>
+                    <a href="{{ url_for('application.impact_page', pid=process.id, aid=a.id) }}">
+                        Analyze downstream impact
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+
+    <p class="muted">No activities added yet.</p>
+
+    {% endif %}
+</section>
+
+<section class="panel">
+    <h2>Dependencies</h2>
+
+    {% if dependencies %}
+
+    <ul class="dependency-list">
+
+        {% for d in dependencies %}
+
+        {% set pred = activities|selectattr("id", "equalto", d.predecessor_id)|first %}
+        {% set succ = activities|selectattr("id", "equalto", d.successor_id)|first %}
+
+        <li>
+            {{ pred.name if pred else d.predecessor_id }}
+            <span>→</span>
+            {{ succ.name if succ else d.successor_id }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+    {% else %}
+
+    <p class="muted">No dependencies connected yet.</p>
+
+    {% endif %}
+</section>
+
+<section class="panel">
+    <h2>Change scenarios</h2>
+
+    {% if activities %}
+
+    <form method="post"
+          action="{{ url_for('application.scenario_form', pid=process.id) }}">
+
+        <label>
+            Scenario name
+            <input type="text"
+                   name="name"
+                   required
+                   placeholder="Skip manual approval">
+        </label>
+
+        <label>
+            Target activity
+            <select name="activity_id" required>
+                {% for a in activities %}
+                <option value="{{ a.id }}">
+                    {{ a.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            Change type
+            <select name="change_type" required>
+                <option value="skip">Skip activity</option>
+                <option value="rename">Rename activity</option>
+                <option value="condition">Change execution condition</option>
+            </select>
+        </label>
+
+        <label>
+            New value
+            <input type="text"
+                   name="new_value"
+                   placeholder="true / false or new activity name">
+        </label>
+
+        <button type="submit">Save scenario</button>
+
+    </form>
+
+    {% else %}
+
+    <p class="muted">
+        Add activities before creating a change scenario.
+    </p>
+
+    {% endif %}
+
+    <h3>Saved scenarios</h3>
+
+    {% for sc in scenarios %}
+
+    <p>
+        <strong>{{ sc.name }}</strong>
+        —
+        <a href="{{ url_for('application.scenario_compare_page', pid=process.id, sid=sc.id) }}">
+            Compare original and modified simulation
+        </a>
+    </p>
+
+    {% else %}
+
+    <p class="muted">No scenarios saved yet.</p>
+
+    {% endfor %}
+
+    <p>
+        <a href="{{ url_for('application.api_export', pid=process.id) }}">
+            Export process JSON
+        </a>
+    </p>
+
+</section>
+
+{% endblock %}

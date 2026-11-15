@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Impact Results{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('application.process_detail', pid=process.id) }}">← Back to process</a></p>
+<p class="eyebrow">DOWNSTREAM IMPACT ANALYSIS</p><h1>Impact results</h1>
+<section class="panel highlight"><span class="muted">Selected activity</span><h2>{{ result.changed_activity.name }}</h2><span class="tag">{{ result.changed_activity.activity_type }}</span></section>
+<div class="grid three">
+<div class="metric"><strong>{{ result.direct_downstream|length }}</strong><span>Directly affected</span></div>
+<div class="metric"><strong>{{ result.indirect_downstream|length }}</strong><span>Indirectly affected</span></div>
+<div class="metric"><strong>{{ result.all_affected|length }}</strong><span>Total affected</span></div>
+</div>
+<section class="panel"><h2>Direct downstream activities</h2>
+{% if result.direct_downstream %}<ul>{% for a in result.direct_downstream %}<li>{{ a.name }} <span class="tag">{{ a.activity_type }}</span></li>{% endfor %}</ul>{% else %}<p class="muted">No direct downstream activities.</p>{% endif %}</section>
+<section class="panel"><h2>Indirect downstream activities</h2>
+{% if result.indirect_downstream %}<ul>{% for a in result.indirect_downstream %}<li>{{ a.name }} <span class="tag">{{ a.activity_type }}</span></li>{% endfor %}</ul>{% else %}<p class="muted">No indirect downstream activities.</p>{% endif %}</section>
+<section class="panel"><h2>Potentially affected decisions, approvals, and outputs</h2>
+{% if result.affected_special_types %}<ul>{% for a in result.affected_special_types %}<li>{{ a.name }} <span class="tag">{{ a.activity_type }}</span></li>{% endfor %}</ul>{% else %}<p class="muted">No downstream approval, decision, or output activities identified.</p>{% endif %}</section>
+<section class="panel"><h2>Paths from selected activity</h2>
+{% if result.paths %}{% for path in result.paths %}<p class="path">{% for a in path %}<span>{{ a.name }}</span>{% if not loop.last %} → {% endif %}{% endfor %}</p>{% endfor %}{% else %}<p class="muted">No downstream paths found.</p>{% endif %}
+</section>
+{% endblock %}

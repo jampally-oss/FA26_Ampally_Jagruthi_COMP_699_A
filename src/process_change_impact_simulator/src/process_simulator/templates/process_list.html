@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Processes{% endblock %}
+{% block content %}
+<div class="section-heading"><div><p class="eyebrow">PROCESS LIBRARY</p><h1>Saved processes</h1></div><a class="button-link" href="{{ url_for('dashboard') }}">Create process</a></div>
+<section class="panel">
+{% if processes %}<table><thead><tr><th>ID</th><th>Process</th><th>Description</th><th></th></tr></thead><tbody>
+{% for p in processes %}<tr><td>{{ p.id }}</td><td>{{ p.name }}</td><td>{{ p.description }}</td><td><a href="{{ url_for('application.process_detail', pid=p.id) }}">Open</a></td></tr>{% endfor %}
+</tbody></table>{% else %}<p class="muted">No saved processes.</p>{% endif %}
+</section>
+{% endblock %}
