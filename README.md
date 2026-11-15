@@ -1,106 +1,78 @@
-# FA26_Ampally_Jagruthi_COMP_699_A
-
 # Process Change Impact Simulator
 
 ## Project Overview
 
-The **Process Change Impact Simulator** is a Python-based web application for examining how a proposed change to a business process may affect connected activities, approvals, and final outputs.
+The **Process Change Impact Simulator** is a Python-based web application that helps users understand how a change to a business process can affect other activities, approvals, and final outputs.
 
-A business process is represented as a directed graph. Activities are the graph nodes, and dependencies between activities are the directed edges. The application can store process information, add activities, connect activities, validate imported process definitions, detect circular dependencies, and identify activities that are downstream from a selected activity.
+The application represents a business process as a directed graph. Activities are the nodes, and dependencies are the connections between them. Users can create processes, add activities, connect activities, analyze downstream impacts, create change scenarios, and compare the original process with a modified version.
 
-The project uses synthetic examples, such as a purchase approval workflow. It is intended for academic development and demonstration and does not require confidential business information.
+The project uses sample business workflows, such as a purchase approval process. It is intended for academic development and demonstration. Use sample data rather than confidential business information.
 
-> **Current project status:** The Week 2 implementation provides working Flask API functionality for process creation and listing, activity creation, dependency creation, JSON import and validation, cycle detection, and downstream impact analysis. The browser-based process editor, change-scenario management, full simulation comparison, graph visualization, and reporting features remain planned work.
-
----
-
-## 1. Project Objectives
-
-The main objectives are to:
+## Project Objectives
 
 - Create and store business process models.
-- Add activities to a process and identify their types.
-- Define dependencies between activities.
-- Represent process activities and dependencies as a directed graph.
-- Identify activities directly connected to a selected activity.
-- Find all reachable downstream activities.
-- Distinguish direct impacts from indirect impacts.
-- Detect circular dependencies.
+- Add activities such as tasks, decisions, approvals, and outputs.
+- Connect activities using dependencies.
+- Identify activities directly and indirectly affected by a change.
+- Validate process information and detect circular dependencies.
+- Import and export process definitions using JSON.
+- Create and save change scenarios without changing the original process.
+- Simulate the original and modified process.
+- Compare activities and outputs from both simulations.
+- Present process information through a browser interface.
+- Provide a foundation for future graph visualization and reporting.
+
+## Main Features
+
+### 1. Process Management
+- Create a process with a name and description.
+- View saved processes.
+- Open a process and view its activities and dependencies.
+- Add activities to a process.
+- Support task, decision, approval, and output activity types.
+- Store process information in an SQLite database.
+
+### 2. Process Import, Export, and Validation
 - Import process definitions from JSON.
-- Validate process data before saving it.
-- Build a foundation for simulating original and modified process paths.
-- Present process analysis results in a form that can later be used by a browser interface and reports.
-
----
-
-## 2. Planned Features
-
-### 2.1 Process management
-
-- Create and view process models.
-- Open a saved process and view its activities and dependencies.
-- Edit process details.
-- Add, edit, and remove activities.
-- Define activity types such as task, decision, approval, and output.
-- Create, edit, and remove dependencies.
-- Define process starting and ending activities.
-
-### 2.2 Process import and validation
-
-- Import a process definition from a JSON document.
-- Check required fields and supported activity types.
-- Verify that dependency references point to activities in the process.
+- Check required fields and activity types.
+- Check that dependency references point to existing activities.
 - Detect circular dependencies.
-- Return useful validation messages.
-- Export process definitions as JSON.
+- Export a saved process as JSON.
 
-### 2.3 Change scenario management
+### 3. Change Scenario Management
+- Create a change scenario for a selected process.
+- Select an activity to change.
+- Enter a proposed change and its new value.
+- Save a scenario separately from the original process.
+- View saved scenarios.
 
-- Create a separate change scenario for a selected process.
-- Select an activity, decision condition, approval requirement, or dependency to change.
-- Record a proposed new value or condition.
-- Keep the original process unchanged when a scenario is created.
-- View, edit, and delete saved scenarios.
-- Run impact analysis for a selected scenario.
-
-### 2.4 Dependency analysis
-
-- Build a directed graph from process activities and dependencies.
-- Identify direct downstream activities.
-- Identify all reachable downstream activities.
+### 4. Dependency and Impact Analysis
+- Represent activities and dependencies as a directed graph.
+- Identify directly connected activities.
+- Find downstream activities.
 - Separate direct and indirect impacts.
-- Identify affected approvals, decisions, and outputs.
-- Present affected activities in a readable result.
+- Identify affected approvals and outputs.
+- Display affected activities in a readable result.
 
-### 2.5 Process simulation
-
+### 5. Process Simulation
 - Simulate the original process.
-- Simulate a modified process scenario.
-- Follow process conditions to determine which activities execute.
+- Simulate a modified scenario.
 - Compare original and modified execution paths.
-- Identify activities that are skipped or newly required.
-- Compare final outputs.
+- Identify activities skipped after a change.
+- Compare the final outputs of both simulations.
 
-### 2.6 Visualization and reporting
+### 6. Browser Interface
+- View the application dashboard.
+- Create and view processes.
+- Open process details.
+- Add activities and dependencies.
+- View impact analysis results.
+- Create and view change scenarios.
+- Compare original and modified simulations.
 
-- Display a process dependency graph.
-- Highlight affected activities after impact analysis.
-- Compare original and modified process paths.
-- Present impact summaries for process managers.
-- Export analysis results as a report.
+## Functional Requirements
 
-### 2.7 Administration
-
-- View stored process models and change scenarios.
-- Remove test process data when appropriate.
-- Review application errors from validation and simulation operations.
-- Display confirmation messages after successful operations.
-
----
-
-## 3. Functional Requirements
-
-The project has 50 planned functional requirements, grouped into seven areas:
+The project contains 50 functional requirements in the following areas:
 
 | Group | Requirement IDs | Area |
 |---|---|---|
@@ -112,56 +84,30 @@ The project has 50 planned functional requirements, grouped into seven areas:
 | F | FR-41 to FR-46 | Visualization and Reporting Requirements |
 | G | FR-47 to FR-50 | System Administration Requirements |
 
-### 3.1 Requirements selected for the Week 2 implementation
+Some requirements are implemented and tested, while others are still planned. The project will be updated as the remaining features are developed and tested.
 
-The following requirements have been selected for the current implementation:
-
-| Requirement | Current implementation |
-|---|---|
-| FR-01 | Create a process with a name and description. |
-| FR-02 | Return a list of saved processes. |
-| FR-05 | Add an activity to an existing process. |
-| FR-09 | Create a dependency between two activities. |
-| FR-13 | Import a process definition through the JSON import API. |
-| FR-14 | Validate the JSON structure before saving imported data. |
-| FR-15 | Return validation errors for missing or invalid information. |
-| FR-17 | Check that dependency references point to existing activities. |
-| FR-18 | Detect and reject circular dependencies. |
-| FR-26 | Represent process activities and dependencies as a directed graph. |
-| FR-27 | Identify direct downstream activities. |
-| FR-28 | Identify all reachable downstream activities. |
-| FR-30 | Separate direct and indirect downstream activities. |
-| FR-32 | Return affected activities in a readable JSON result. |
-
-These are the selected requirements represented in the Week 2 code. The remaining requirements are planned and should not be described as completed until they are implemented and tested.
-
----
-
-## 4. Technology Stack
+## Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Python 3.13 (also compatible with supported Python 3.11/3.12 environments) | Main programming language |
-| Flask | Web application framework and API endpoints |
+| Python 3.13 | Main programming language |
+| Flask | Web application framework and API routes |
 | SQLite | Local relational database |
-| Python `sqlite3` | Database connections and SQL operations |
-| NetworkX | Directed graphs, cycle detection, and downstream analysis |
-| HTML and CSS | Planned browser interface |
-| JSON | Process import format and API request/response data |
+| Python `sqlite3` | Database access |
+| NetworkX | Directed graphs, cycle detection, and impact analysis |
+| HTML | Browser page structure |
+| CSS | Browser page styling |
+| JSON | Process import/export and API data |
 | pytest | Automated testing |
 | Visual Studio Code | Development environment |
 | Git and GitHub | Version control and source-code hosting |
 
-The current implementation uses Python's built-in `sqlite3` module. Flask-SQLAlchemy, Pandas, NumPy, Plotly, and Matplotlib are not required by the current Week 2 source code. Add a package to `requirements.txt` only when the project implementation uses it.
+The application uses Python's built-in `sqlite3` module. A separate SQLite package or Flask-SQLAlchemy is not required.
 
----
-
-## 5. Project Structure
-
-The current Week 2 source structure is:
+## Project Structure
 
 ```text
-process_change_impact_simulator_week2/
+process_change_impact_simulator/
 │
 ├── app.py
 ├── config.py
@@ -172,6 +118,10 @@ process_change_impact_simulator_week2/
 ├── instance/
 │   └── .gitkeep
 │
+├── examples/
+│   ├── sample_process.json
+│   └── invalid_process.json
+│
 ├── src/
 │   └── process_simulator/
 │       ├── __init__.py
@@ -180,81 +130,92 @@ process_change_impact_simulator_week2/
 │       ├── repository.py
 │       ├── graph.py
 │       ├── importer.py
-│       └── routes.py
-│
-├── examples/
-│   └── sample_process.json
+│       ├── routes.py
+│       ├── validators.py
+│       ├── process_service.py
+│       ├── dependency_service.py
+│       ├── impact_service.py
+│       │
+│       ├── templates/
+│       │   ├── base.html
+│       │   ├── dashboard.html
+│       │   ├── process_list.html
+│       │   ├── process_detail.html
+│       │   ├── impact_results.html
+│       │   └── error.html
+│       │
+│       └── static/
+│           └── css/
+│               └── style.css
 │
 └── tests/
     ├── conftest.py
-    └── test_core.py
+    ├── test_core.py
+    ├── test_process_integration.py
+    ├── test_dependency_integration.py
+    ├── test_impact_integration.py
+    └── test_week3_extended.py
 ```
 
-### 5.1 Main files and responsibilities
+### Main File Responsibilities
 
-| File | Responsibility |
+| File or folder | Responsibility |
 |---|---|
-| `app.py` | Creates and configures the Flask application, initializes the database, registers routes, and provides the home endpoint. |
-| `config.py` | Defines the application configuration and SQLite database path. |
-| `requirements.txt` | Lists the Python packages needed by the current implementation. |
-| `src/process_simulator/database.py` | Creates SQLite connections and initializes database tables from the schema. |
-| `src/process_simulator/schema.sql` | Defines the process, activity, and dependency tables and their relationships. |
-| `src/process_simulator/repository.py` | Contains database operations for processes, activities, and dependencies. |
-| `src/process_simulator/graph.py` | Builds the directed graph and calculates downstream impacts. |
-| `src/process_simulator/importer.py` | Validates JSON process definitions, checks dependency references, detects cycles, and saves valid imports. |
-| `src/process_simulator/routes.py` | Defines Flask API endpoints for process operations, activity operations, dependencies, import, and impact analysis. |
-| `examples/sample_process.json` | Provides an example process definition for testing JSON import. |
-| `tests/conftest.py` | Creates a test application using a temporary SQLite database. |
-| `tests/test_core.py` | Contains automated tests for the main Week 2 functionality. |
-| `instance/` | Stores the local SQLite database created when the application runs. |
+| `app.py` | Starts the Flask application. |
+| `config.py` | Stores application and database configuration. |
+| `requirements.txt` | Lists the Python packages required by the project. |
+| `database.py` | Creates database connections and initializes the database. |
+| `schema.sql` | Defines the SQLite database tables. |
+| `repository.py` | Handles database operations for stored project data. |
+| `graph.py` | Builds the directed graph and supports dependency analysis. |
+| `importer.py` | Handles JSON process import and related validation. |
+| `routes.py` | Defines the Flask routes and API endpoints. |
+| `validators.py` | Checks process and activity information. |
+| `process_service.py` | Handles process-related operations. |
+| `dependency_service.py` | Handles activity dependencies. |
+| `impact_service.py` | Calculates the activities affected by a change. |
+| `templates/` | Contains the HTML pages displayed in the browser. |
+| `static/css/style.css` | Contains the browser interface styles. |
+| `examples/` | Contains sample JSON process files. |
+| `tests/` | Contains automated tests. |
+| `instance/` | Stores the local SQLite database created by the application. |
 
-The local database file is generated at runtime and should not be committed to GitHub.
+The database file is created when the application initializes. It should not be committed to GitHub.
 
----
-
-## 6. Software Requirements
-
-### 6.1 Hardware and software
+## Requirements
 
 - Windows 10 or later, macOS, or Linux.
-- Python 3.11 or later. Python 3.13 was used for the current development and test run.
+- Python 3.13 (the development environment used for this project).
 - Visual Studio Code or another Python editor.
 - A modern web browser.
-- Internet access during initial package installation.
+- Internet access for installing the Python packages.
 
-### 6.2 Check Python
-
-On Windows PowerShell:
+Check the Python version:
 
 ```powershell
-py --list
 python --version
 ```
 
-The current development environment uses Python 3.13.0.
+## Installation and Setup
 
----
+### Windows PowerShell
 
-## 7. Installation and Setup
-
-### 7.1 Windows PowerShell
-
-1. Clone or download the GitHub repository.
+1. Clone the repository or download the project files.
 2. Open the project folder in Visual Studio Code.
 3. Open a PowerShell terminal in the project root.
-4. Create a virtual environment. Use a Python version installed on your computer. For Python 3.13:
+4. Create a virtual environment:
 
 ```powershell
 py -3.13 -m venv .venv
 ```
 
-5. Activate the environment:
+5. Activate the virtual environment:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-If PowerShell blocks activation for the current terminal session, run:
+If PowerShell blocks the activation script, run this command in the current terminal:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
@@ -266,42 +227,42 @@ Then activate the environment again:
 .\.venv\Scripts\Activate.ps1
 ```
 
-6. Upgrade pip and install dependencies:
+6. Upgrade pip and install the required packages:
 
 ```powershell
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-7. Set the Python source path:
+7. Set the source folder path:
 
 ```powershell
 $env:PYTHONPATH = "src"
 ```
 
-8. Start the Flask application:
+8. Start the application:
 
 ```powershell
 python app.py
 ```
 
-9. Open the application in a browser:
+9. Open this address in your browser:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-The home endpoint should return a JSON response identifying the Process Change Impact Simulator and showing its running status.
+The Flask application should open and display the Process Change Impact Simulator dashboard.
 
-### 7.2 macOS or Linux
+### macOS or Linux
 
-From the project root:
+From the project root, run:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 export PYTHONPATH=src
 python app.py
 ```
@@ -312,403 +273,185 @@ Then open:
 http://127.0.0.1:5000
 ```
 
----
+## Running the Application
 
-## 8. Dependencies
+Each time you want to run the project on Windows:
 
-The current `requirements.txt` contains:
-
-```text
-Flask==3.1.2
-networkx==3.5
-pytest==8.4.2
-```
-
-Install the packages with:
+1. Open PowerShell in the project folder.
+2. Activate the virtual environment.
+3. Set `PYTHONPATH`.
+4. Start the Flask application.
 
 ```powershell
-pip install -r requirements.txt
+.\.venv\Scripts\Activate.ps1
+$env:PYTHONPATH = "src"
+python app.py
 ```
 
-SQLite is included with Python, so a separate SQLite package is not needed.
+Keep the terminal open while using the application. To stop the server, press `Ctrl + C`.
 
-To check installed packages:
+## Using the Application
 
-```powershell
-pip list
-```
+The following sample workflow can be used to check the main features:
 
-When adding a new library, update `requirements.txt` and test the installation in a fresh virtual environment.
+1. Open the dashboard in the browser.
+2. Create a process named `Purchase Approval Workflow`.
+3. Add these activities:
+   - `Submit Purchase Request` – Task
+   - `Manager Approval` – Approval
+   - `Create Purchase Order` – Output
+4. Add dependencies in this order:
+   - Submit Purchase Request → Manager Approval
+   - Manager Approval → Create Purchase Order
+5. Open the impact analysis for `Submit Purchase Request`.
+6. Check the direct and indirect affected activities.
+7. Create a change scenario named `Skip Manager Approval`.
+8. Select `Manager Approval` as the target activity.
+9. Select the `Skip activity` change and set its value to `true`.
+10. Run the simulation comparison.
+11. Review the original and modified results.
 
----
+In this example, the original process runs all three activities. The modified simulation skips Manager Approval and Create Purchase Order.
 
-## 9. Database Setup
+## JSON Examples
 
-The application uses SQLite for local data storage. The database is initialized automatically when the Flask application starts.
+Sample process files are available in the `examples/` folder:
 
-The database file is created at:
+- `sample_process.json` contains a sample process definition.
+- `invalid_process.json` contains invalid process data for validation testing.
 
-```text
-instance/process_simulator.db
-```
+The application supports JSON process import and export through its available routes. Use the sample files when testing these operations.
 
-The schema is defined in:
+## Database
+
+The application uses SQLite to store process information.
+
+The database is created automatically when the application starts. The database schema is located at:
 
 ```text
 src/process_simulator/schema.sql
 ```
 
-### 9.1 Database tables
+The local database is stored under the `instance/` folder.
 
-| Table | Purpose |
-|---|---|
-| `processes` | Stores process names, descriptions, and creation timestamps. |
-| `activities` | Stores activities associated with a process, including their names, descriptions, and types. |
-| `dependencies` | Stores directed connections between activities. |
+The main database records include:
 
-### 9.2 Database relationships
+- Processes
+- Activities
+- Dependencies
+- Change scenarios
 
-- One process can contain multiple activities.
-- One process can contain multiple dependencies.
-- Each dependency connects a predecessor activity to a successor activity.
-- Foreign keys help maintain relationships between stored records.
-- Duplicate dependency pairs are restricted by a database uniqueness constraint.
+Do not delete the database file if you need to keep the saved project data. Local database files are excluded from GitHub.
 
-The database is initialized by `initialize_database()` in `src/process_simulator/database.py`. The application does not require a separate manual database initialization command.
+## Testing
 
-The database file contains local development data. Back up any data you need before deleting it. The `.gitignore` file excludes local database files from Git.
-
----
-
-## 10. Using the API
-
-The current Week 2 application provides JSON API endpoints. These endpoints can be tested through PowerShell, a REST client, or another HTTP client.
-
-### 10.1 Home endpoint
-
-```http
-GET /
-```
-
-Returns the application name and running status.
-
-### 10.2 Create a process — FR-01
-
-```http
-POST /api/processes
-Content-Type: application/json
-```
-
-Example request:
-
-```json
-{
-  "name": "Purchase Approval",
-  "description": "Purchase request approval workflow"
-}
-```
-
-The application returns the saved process details, including its database ID.
-
-### 10.3 List processes — FR-02
-
-```http
-GET /api/processes
-```
-
-Returns the saved process records.
-
-### 10.4 View one process
-
-```http
-GET /api/processes/<process_id>
-```
-
-Returns the selected process, its activities, and its dependencies.
-
-### 10.5 Add an activity — FR-05
-
-```http
-POST /api/processes/<process_id>/activities
-Content-Type: application/json
-```
-
-Example request:
-
-```json
-{
-  "name": "Manager Approval",
-  "activity_type": "approval"
-}
-```
-
-Supported activity types:
-
-- `task`
-- `decision`
-- `approval`
-- `output`
-
-### 10.6 Create a dependency — FR-09
-
-```http
-POST /api/processes/<process_id>/dependencies
-Content-Type: application/json
-```
-
-Example request:
-
-```json
-{
-  "predecessor_id": 1,
-  "successor_id": 2
-}
-```
-
-The application checks that both activities belong to the selected process and that the new dependency does not create a cycle.
-
-### 10.7 Analyze downstream impact — FR-27, FR-28, FR-30, FR-32
-
-```http
-GET /api/processes/<process_id>/activities/<activity_id>/impact
-```
-
-The response contains:
-
-- `changed_activity`
-- `direct_downstream`
-- `indirect_downstream`
-- `all_affected`
-
-The direct list contains the immediate successor activities. The indirect list contains reachable downstream activities that are not immediate successors.
-
-### 10.8 Import a process from JSON — FR-13 to FR-18
-
-```http
-POST /api/import
-Content-Type: application/json
-```
-
-Example request:
-
-```json
-{
-  "process": {
-    "name": "Purchase Approval",
-    "description": "Example purchase workflow"
-  },
-  "activities": [
-    {
-      "key": "submit",
-      "name": "Submit Purchase Request",
-      "activity_type": "task"
-    },
-    {
-      "key": "manager",
-      "name": "Manager Approval",
-      "activity_type": "approval"
-    },
-    {
-      "key": "finance",
-      "name": "Finance Review",
-      "activity_type": "approval"
-    },
-    {
-      "key": "order",
-      "name": "Create Purchase Order",
-      "activity_type": "output"
-    }
-  ],
-  "dependencies": [
-    {"from": "submit", "to": "manager"},
-    {"from": "manager", "to": "finance"},
-    {"from": "finance", "to": "order"}
-  ]
-}
-```
-
-The `key` value identifies an activity within the JSON document. Dependencies use these keys to identify the activities they connect.
-
-The importer checks the required process information, activity keys, activity names, supported activity types, dependency references, and circular dependencies before saving the process.
-
-A sample import document is available at:
-
-```text
-examples/sample_process.json
-```
-
----
-
-## 11. Example Workflow and Impact Analysis
-
-The project uses a synthetic Purchase Approval workflow to demonstrate dependency analysis.
-
-```text
-Submit Purchase Request
-          |
-          v
-    Manager Approval
-          |
-          v
-     Finance Review
-          |
-          v
-  Create Purchase Order
-```
-
-If `Submit Purchase Request` is selected for impact analysis:
-
-| Result type | Expected activity |
-|---|---|
-| Direct downstream | Manager Approval |
-| Indirect downstream | Finance Review and Create Purchase Order |
-| All affected | All three downstream activities |
-
-This example shows how a change to one activity can be traced through the rest of the process.
-
-### 11.1 Manual API test example using PowerShell
-
-After starting the application, open a second PowerShell terminal in the project directory. Activate the virtual environment and set the source path.
-
-Create a process:
-
-```powershell
-$process = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:5000/api/processes" `
-  -ContentType "application/json" `
-  -Body '{"name":"Purchase Approval","description":"Purchase request approval workflow"}'
-
-$processId = $process.id
-```
-
-Use `$processId` as the variable name. Do not use `$pid`, because PowerShell reserves `$PID` as a read-only variable.
-
-Create activities:
-
-```powershell
-$a1 = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:5000/api/processes/$processId/activities" `
-  -ContentType "application/json" `
-  -Body '{"name":"Submit Purchase Request","activity_type":"task"}'
-
-$a2 = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:5000/api/processes/$processId/activities" `
-  -ContentType "application/json" `
-  -Body '{"name":"Manager Approval","activity_type":"approval"}'
-
-$a3 = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:5000/api/processes/$processId/activities" `
-  -ContentType "application/json" `
-  -Body '{"name":"Create Purchase Order","activity_type":"output"}'
-```
-
-Create dependencies:
-
-```powershell
-Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:5000/api/processes/$processId/dependencies" `
-  -ContentType "application/json" `
-  -Body "{`"predecessor_id`":$($a1.id),`"successor_id`":$($a2.id)}"
-
-Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:5000/api/processes/$processId/dependencies" `
-  -ContentType "application/json" `
-  -Body "{`"predecessor_id`":$($a2.id),`"successor_id`":$($a3.id)}"
-```
-
-Run impact analysis:
-
-```powershell
-Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:5000/api/processes/$processId/activities/$($a1.id)/impact" |
-  ConvertTo-Json -Depth 5
-```
-
-The expected result identifies Manager Approval as direct downstream and Create Purchase Order as indirect downstream.
-
----
-
-## 12. Testing
-
-Run automated tests from the project root. Make sure the virtual environment is active and `PYTHONPATH` is set.
+Run the automated tests from the project root. Make sure the virtual environment is active and `PYTHONPATH` is set.
 
 ```powershell
 $env:PYTHONPATH = "src"
+python -m pytest -v
+```
+
+To display a shorter test summary:
+
+```powershell
 python -m pytest -q
 ```
 
-The Week 2 development test run produced:
+The latest test run completed successfully:
 
 ```text
-....                                                                     [100%]
-4 passed in 0.47s
+11 passed
 ```
 
-### 12.1 Tests included
+The tests cover the main process operations, dependency handling, impact analysis, validation, and integrated application workflows.
 
-| Test | Purpose | Observed result |
-|---|---|---|
-| Process creation, listing, activity creation, and dependency creation | Checks the main process API operations. | Passed |
-| Downstream impact | Checks direct and indirect downstream activity identification. | Passed |
-| JSON import and validation | Checks valid import and rejection of a missing dependency reference. | Passed |
-| Circular dependency validation | Checks rejection of an imported process containing a cycle. | Passed |
+If a test fails, read the error message in the terminal and check the relevant route, service, template, or test before making changes.
 
-### 12.2 Manual testing performed
+## Current Project Status
 
-The application was also tested through PowerShell:
+The application currently supports:
 
-- Created a Purchase Approval process.
-- Added Submit Purchase Request, Manager Approval, and Create Purchase Order activities.
-- Created two dependencies between the three activities.
-- Ran downstream impact analysis.
-- Confirmed that Manager Approval appeared in `direct_downstream`.
-- Confirmed that Create Purchase Order appeared in `indirect_downstream`.
-- Confirmed that both activities appeared in `all_affected`.
+- Creating and viewing processes.
+- Adding activities to a process.
+- Adding dependencies between activities.
+- Storing process information in SQLite.
+- Importing and exporting process information using JSON.
+- Validating process information and dependency references.
+- Detecting circular dependencies.
+- Identifying direct and indirect downstream impacts.
+- Creating and viewing change scenarios.
+- Running a basic skip-activity simulation.
+- Comparing original and modified simulation results.
+- Using the main browser pages for the process workflow.
 
-The test results above describe the cases that were actually run. Additional testing is required for unimplemented features and for broader input conditions.
+The following features still need more development:
 
----
+- Complete editing and deletion controls for processes, activities, and dependencies.
+- Full support for editing and deleting saved scenarios.
+- More advanced decision and process-condition handling.
+- A visual dependency graph with affected activities highlighted.
+- Exporting impact analysis results as a report.
+- Manager and administrator access controls.
+- An administrator page for reviewing application errors and cleaning up test data.
+- More testing for additional process and scenario types.
 
-## 13. Known Limitations and Work Remaining
+## Further Project Development Plan
 
-The current implementation is an API-focused Week 2 foundation. The following features are not yet available in the current source code:
+The next development tasks are:
 
-- Editing process names and descriptions.
-- Editing and deleting activities.
-- Editing and removing dependencies.
-- Defining and managing starting and ending activities.
-- Exporting process definitions to JSON.
-- Creating, editing, and deleting change scenarios.
-- Saving proposed changes separately from the original process.
-- Running a complete original-versus-modified process simulation.
-- Applying general user-defined decision and approval conditions.
-- Comparing executed, skipped, newly required, and final-output activities.
-- Displaying a visual process graph in the browser.
-- Highlighting affected activities on a graph.
-- Providing a complete browser-based process editor.
-- Exporting impact analysis reports.
-- Providing process manager and administrator screens.
-- Authentication and role-based access control.
-- Broader performance, compatibility, and security testing.
+1. I plan to add options to edit and delete processes and activities.
+2. The next task is to add options for editing and removing dependencies.
+3. I would like to create a visual graph to show process activities and their connections.
+4. I also plan to improve the simulation to support decision conditions and more process changes.
+5. Finally, I intend to add report export and administrator features and test all the new functions.
 
-The current graph analysis identifies downstream dependencies. It does not yet simulate every type of business process behavior. Results should be treated as analysis of the supplied process model, not as guaranteed outcomes in a real organization.
+After these tasks, I will review the functional requirements, fix any remaining issues, improve the user interface, and prepare the final project demonstration and documentation.
 
----
+## Git and GitHub
 
-## 14. Privacy and Security
+Check which files have changed:
 
-- Use synthetic process data for development and demonstrations.
-- Do not upload confidential business workflows or personal information.
-- Do not commit passwords, API keys, tokens, or other credentials.
-- Keep virtual environments and local database files out of version control.
-- Do not use Flask debug mode for a public or production deployment.
-- Add suitable access controls and stronger input handling before any shared deployment.
-- Review file upload validation and database handling before using real organizational information.
+```powershell
+git status
+```
 
-### 14.1 Suggested `.gitignore`
+Add the project files:
+
+```powershell
+git add .
+```
+
+Commit the changes:
+
+```powershell
+git commit -m "Update Process Change Impact Simulator"
+```
+
+Push the changes to GitHub:
+
+```powershell
+git push
+```
+
+If the GitHub remote has not been configured yet, add your repository URL:
+
+```powershell
+git remote add origin YOUR_GITHUB_REPOSITORY_URL
+git branch -M main
+git push -u origin main
+```
+
+Replace `YOUR_GITHUB_REPOSITORY_URL` with your own GitHub repository URL.
+
+Before pushing, check that `.venv/`, local database files, cache folders, and secret configuration files are not included in the commit.
+
+## .gitignore
+
+The `.gitignore` file should exclude local and temporary files:
 
 ```gitignore
-# Python
+# Python cache
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -717,12 +460,12 @@ __pycache__/
 .venv/
 venv/
 
-# Local configuration and secrets
+# Local environment and secrets
 .env
 .env.*
 !.env.example
 
-# Local database files
+# SQLite database files
 instance/*.db
 *.sqlite
 *.sqlite3
@@ -733,74 +476,15 @@ instance/*.db
 Thumbs.db
 ```
 
----
+## Privacy and Security
 
-## 15. Git and GitHub Workflow
+- Use sample or synthetic process data for development and demonstrations.
+- Do not upload confidential business workflows or personal information.
+- Do not commit passwords, API keys, tokens, or other credentials.
+- Keep virtual environments and local database files out of version control.
+- Do not use Flask debug mode for a public or production deployment.
+- Add suitable authentication and access controls before using the application in a shared environment.
 
-Commit work regularly so that the repository shows the project's progress. Use meaningful commit messages for each development task.
+## Project Purpose
 
-Check the changed files:
-
-```powershell
-git status
-```
-
-Stage and commit the Week 2 implementation:
-
-```powershell
-git add README.md requirements.txt app.py config.py src examples tests .gitignore
-git commit -m "Implement Week 2 process and impact analysis functionality"
-```
-
-Push the changes:
-
-```powershell
-git push
-```
-
-If this is the first push and the remote has not been configured, add the GitHub repository URL and set the branch:
-
-```powershell
-git branch -M main
-git remote add origin YOUR_GITHUB_REPOSITORY_URL
-git push -u origin main
-```
-
-Replace `YOUR_GITHUB_REPOSITORY_URL` with the URL of your own GitHub repository.
-
-Before committing, check that local database files, virtual environments, and credentials are not staged.
-
-### 15.1 Week 2 milestone documentation
-
-The Week 2 milestone document should be stored at:
-
-```text
-docs/
-└── step_2/
-    └── week_2/
-        ├── core_functionality.pdf
-        └── screenshots/
-```
-
-The document should identify the selected functional requirements, explain the implementation for each, list the responsible source modules, summarize actual tests and results, describe technical problems, and identify incomplete work.
-
----
-
-## 16. Development Milestones
-
-The planned development work is:
-
-1. Complete the requirements, architecture, and data design.
-2. Set up the Python, Flask, SQLite, and NetworkX project foundation.
-3. Implement process creation and activity management.
-4. Implement dependency creation, graph construction, and downstream analysis.
-5. Add process import validation and cycle detection.
-6. Implement change scenario management.
-7. Develop original and modified process simulation.
-8. Add process graph visualization and result reporting.
-9. Test functional and nonfunctional requirements.
-10. Correct defects, improve usability, and complete documentation.
-11. Prepare the final project demonstration.
-
-The current Week 2 work covers the process and dependency foundation, JSON import validation, and downstream graph analysis. Later milestones will add the remaining features.
-
+This project demonstrates how a proposed change in one part of a business process can affect connected activities and final outputs. It provides a working foundation for process management, dependency analysis, and basic change simulation, with further development planned for visualization, reporting, and administration.
