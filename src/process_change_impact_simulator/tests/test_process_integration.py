@@ -4,3 +4,4 @@ def test_browser_workflow_creates_and_retrieves_process(client):
     assert b"Purchase Approval" in response.data
     listing = client.get("/processes")
     assert b"Purchase Approval" in listing.data
+    
