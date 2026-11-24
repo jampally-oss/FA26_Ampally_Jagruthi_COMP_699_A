@@ -1,33 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Dashboard | Process Change Impact Simulator{% endblock %}
 {% block content %}
-<section class="hero">
-  <p class="eyebrow">WEEK 3 INTEGRATED WORKFLOW</p>
-  <h1>Process Change Impact Simulator</h1>
-  <p>Create a process, connect activities, and identify downstream impacts.</p>
-</section>
+<section class="hero"><p class="eyebrow">BUSINESS PROCESS ANALYSIS</p><h1>Process Change Impact Simulator</h1>
+<p>Create a process, connect activities, and see what may be affected when a change is made.</p></section>
 <div class="grid two">
-  <section class="panel">
-    <h2>Create a process</h2>
-    <form method="post" action="{{ url_for('application.process_create_form') }}">
-      <label>Process name<input name="name" required placeholder="e.g. Purchase Approval"></label>
-      <label>Description<textarea name="description" rows="3" placeholder="Describe the business workflow"></textarea></label>
-      <button type="submit">Create process</button>
-    </form>
-  </section>
-  <section class="panel">
-    <h2>Workflow steps</h2>
-    <ol class="steps"><li>Enter process details</li><li>Add process activities</li><li>Connect dependencies</li><li>Run downstream impact analysis</li></ol>
-  </section>
+<section class="panel"><h2>Create a process</h2>
+<form method="post" action="{{ url_for('application.process_create_form') }}">
+<label>Process name<input name="name" required placeholder="e.g. Purchase Approval"></label>
+<label>Description<textarea name="description" rows="3" placeholder="Describe the business workflow"></textarea></label>
+<button type="submit">Create process</button></form></section>
+<section class="panel"><h2>How to use</h2><ol class="steps"><li>Create a process</li><li>Add activities</li><li>Connect dependencies</li><li>Analyze impact</li><li>Create and compare a change scenario</li></ol></section>
 </div>
-<section class="panel">
-  <div class="section-heading"><h2>Saved processes</h2><a href="{{ url_for('application.process_list') }}">View all</a></div>
-  {% if processes %}
-  <div class="process-cards">{% for p in processes %}
-    <a class="process-card" href="{{ url_for('application.process_detail', pid=p.id) }}">
-      <strong>{{ p.name }}</strong><span>{{ p.description or "No description" }}</span><small>Process #{{ p.id }}</small>
-    </a>
-  {% endfor %}</div>
-  {% else %}<p class="muted">No processes saved yet. Create your first process above.</p>{% endif %}
-</section>
+<section class="panel"><div class="section-heading"><h2>Saved processes</h2><a href="{{ url_for('application.process_list') }}">View all</a></div>
+{% if processes %}<div class="process-cards">{% for p in processes %}<a class="process-card" href="{{ url_for('application.process_detail',pid=p.id) }}"><strong>{{ p.name }}</strong><span>{{ p.description or "No description" }}</span><small>Process #{{ p.id }}</small></a>{% endfor %}</div>
+{% else %}<p class="muted">No processes saved yet. Create your first process above.</p>{% endif %}</section>
 {% endblock %}
