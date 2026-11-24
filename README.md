@@ -476,15 +476,6 @@ instance/*.db
 Thumbs.db
 ```
 
-## Privacy and Security
-
-- Use sample or synthetic process data for development and demonstrations.
-- Do not upload confidential business workflows or personal information.
-- Do not commit passwords, API keys, tokens, or other credentials.
-- Keep virtual environments and local database files out of version control.
-- Do not use Flask debug mode for a public or production deployment.
-- Add suitable authentication and access controls before using the application in a shared environment.
-
 ## Project Purpose
 
 This project demonstrates how a proposed change in one part of a business process can affect connected activities and final outputs. It provides a working foundation for process management, dependency analysis, and basic change simulation, with further development planned for visualization, reporting, and administration.
