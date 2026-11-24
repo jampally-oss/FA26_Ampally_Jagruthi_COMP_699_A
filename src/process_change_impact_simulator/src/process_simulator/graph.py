@@ -6,7 +6,8 @@ def graph(path, pid):
     for activity in repo.activities(path, pid):
         g.add_node(activity["id"], **activity)
     for dependency in repo.dependencies(path, pid):
-        g.add_edge(dependency["predecessor_id"], dependency["successor_id"])
+        g.add_edge(dependency["predecessor_id"], dependency["successor_id"],
+                   condition=dependency.get("condition_expression", ""), dependency_id=dependency["id"])
     return g
 
 def check_acyclic(g):
@@ -31,8 +32,6 @@ def impact(path, pid, activity_id):
         "direct_downstream": [activity_map[i] for i in sorted(direct)],
         "indirect_downstream": [activity_map[i] for i in sorted(indirect)],
         "all_affected": affected,
-        "affected_special_types": [
-            a for a in affected if a["activity_type"] in {"approval", "decision", "output"}
-        ],
+        "affected_special_types": [a for a in affected if a["activity_type"] in {"approval", "decision", "output"}],
         "paths": paths
     }
