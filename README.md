@@ -442,7 +442,7 @@ git branch -M main
 git push -u origin main
 ```
 
-Replace `YOUR_GITHUB_REPOSITORY_URL` with your own GitHub repository URL.
+Repository: https://github.com/jampally-oss/FA26_Ampally_Jagruthi_COMP_699_A
 
 Before pushing, check that `.venv/`, local database files, cache folders, and secret configuration files are not included in the commit.
 
