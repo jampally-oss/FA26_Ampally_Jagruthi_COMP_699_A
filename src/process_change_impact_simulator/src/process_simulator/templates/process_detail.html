@@ -1,248 +1,131 @@
-
 {% extends "base.html" %}
-
 {% block title %}{{ process.name }}{% endblock %}
-
 {% block content %}
-
-<p>
-    <a href="{{ url_for('application.process_list') }}">← All processes</a>
-</p>
-
+<p><a href="{{ url_for('application.process_list') }}">← All processes</a></p>
 <p class="eyebrow">PROCESS #{{ process.id }}</p>
+<div class="section-heading"><div><h1>{{ process.name }}</h1><p class="muted">{{ process.description }}</p></div>
+<div class="actions"><a class="button-link" href="{{ url_for('application.graph_page',pid=process.id) }}">View process graph</a>
+<a class="button-link secondary" href="{{ url_for('application.impact_report',pid=process.id) }}">Download impact CSV</a>
+<a class="button-link secondary" href="{{ url_for('application.api_export',pid=process.id) }}">Export JSON</a></div></div>
 
-<h1>{{ process.name }}</h1>
-<p class="muted">{{ process.description }}</p>
+<section class="panel">
+<h2>Edit process details</h2>
+<form method="post" action="{{ url_for('application.process_edit_form',pid=process.id) }}" class="form-grid">
+<label>Process name<input name="name" value="{{ process.name }}" required></label>
+<label>Description<input name="description" value="{{ process.description }}"></label>
+<div><button type="submit">Save process</button></div>
+</form>
+<form method="post" action="{{ url_for('application.process_delete_form',pid=process.id) }}" class="inline-form">
+<button class="danger" type="submit">Delete process</button>
+</form>
+</section>
 
 <div class="grid two">
-
-    <section class="panel">
-        <h2>Add activity</h2>
-
-        <form method="post"
-              action="{{ url_for('application.activity_form', pid=process.id) }}">
-
-            <label>
-                Activity name
-                <input type="text"
-                       name="name"
-                       required
-                       placeholder="e.g. Manager Approval">
-            </label>
-
-            <label>
-                Description
-                <input type="text"
-                       name="description"
-                       placeholder="Optional details">
-            </label>
-
-            <label>
-                Activity type
-                <select name="activity_type" required>
-                    <option value="task">Task</option>
-                    <option value="decision">Decision</option>
-                    <option value="approval">Approval</option>
-                    <option value="output">Output</option>
-                </select>
-            </label>
-
-            <button type="submit">Add activity</button>
-        </form>
-    </section>
-
-    <section class="panel">
-        <h2>Create dependency</h2>
-
-        {% if activities|length >= 2 %}
-
-        <form method="post"
-              action="{{ url_for('application.dependency_form', pid=process.id) }}">
-
-            <label>
-                Predecessor
-                <select name="predecessor_id" required>
-                    {% for a in activities %}
-                    <option value="{{ a.id }}">
-                        {{ a.name }} (#{{ a.id }})
-                    </option>
-                    {% endfor %}
-                </select>
-            </label>
-
-            <label>
-                Successor
-                <select name="successor_id" required>
-                    {% for a in activities %}
-                    <option value="{{ a.id }}">
-                        {{ a.name }} (#{{ a.id }})
-                    </option>
-                    {% endfor %}
-                </select>
-            </label>
-
-            <button type="submit">Connect activities</button>
-        </form>
-
-        {% else %}
-
-        <p class="muted">
-            Add at least two activities first.
-        </p>
-
-        {% endif %}
-    </section>
-
+<section class="panel">
+<h2>Add activity</h2>
+<form method="post" action="{{ url_for('application.activity_form',pid=process.id) }}">
+<label>Activity name<input name="name" required placeholder="e.g. Manager Approval"></label>
+<label>Description<input name="description" placeholder="Optional details"></label>
+<label>Activity type<select name="activity_type"><option value="task">Task</option><option value="decision">Decision</option><option value="approval">Approval</option><option value="output">Output</option></select></label>
+<label>Condition (optional)<input name="condition_expression" placeholder="true / false"></label>
+<button type="submit">Add activity</button></form>
+</section>
+<section class="panel">
+<h2>Create dependency</h2>
+{% if activities|length >= 2 %}
+<form method="post" action="{{ url_for('application.dependency_form',pid=process.id) }}">
+<label>Predecessor<select name="predecessor_id">{% for a in activities %}<option value="{{ a.id }}">{{ a.name }} (#{{ a.id }})</option>{% endfor %}</select></label>
+<label>Successor<select name="successor_id">{% for a in activities %}<option value="{{ a.id }}">{{ a.name }} (#{{ a.id }})</option>{% endfor %}</select></label>
+<label>Condition (optional)<input name="condition_expression" placeholder="true / false"></label>
+<button type="submit">Connect activities</button></form>
+{% else %}<p class="muted">Add at least two activities first.</p>{% endif %}
+</section>
 </div>
 
 <section class="panel">
-    <h2>Activities and impact analysis</h2>
-
-    {% if activities %}
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Activity</th>
-                <th>Type</th>
-                <th>Impact analysis</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for a in activities %}
-            <tr>
-                <td>{{ a.id }}</td>
-                <td>{{ a.name }}</td>
-                <td>
-                    <span class="tag">{{ a.activity_type }}</span>
-                </td>
-                <td>
-                    <a href="{{ url_for('application.impact_page', pid=process.id, aid=a.id) }}">
-                        Analyze downstream impact
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% else %}
-
-    <p class="muted">No activities added yet.</p>
-
-    {% endif %}
+<h2>Starting and ending activities</h2>
+<form method="post" action="{{ url_for('application.endpoints_form',pid=process.id) }}" class="form-grid">
+<label>Starting activity<select name="start_activity_id"><option value="">Automatic (activities with no incoming link)</option>{% for a in activities %}<option value="{{ a.id }}" {% if process.start_activity_id==a.id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></label>
+<label>Ending activity<select name="end_activity_id"><option value="">Not selected</option>{% for a in activities %}<option value="{{ a.id }}" {% if process.end_activity_id==a.id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></label>
+<div><button type="submit">Save start and end</button></div>
+</form>
 </section>
 
 <section class="panel">
-    <h2>Dependencies</h2>
-
-    {% if dependencies %}
-
-    <ul class="dependency-list">
-
-        {% for d in dependencies %}
-
-        {% set pred = activities|selectattr("id", "equalto", d.predecessor_id)|first %}
-        {% set succ = activities|selectattr("id", "equalto", d.successor_id)|first %}
-
-        <li>
-            {{ pred.name if pred else d.predecessor_id }}
-            <span>→</span>
-            {{ succ.name if succ else d.successor_id }}
-        </li>
-
-        {% endfor %}
-
-    </ul>
-
-    {% else %}
-
-    <p class="muted">No dependencies connected yet.</p>
-
-    {% endif %}
+<h2>Activities</h2>
+{% if activities %}
+{% for a in activities %}
+<div class="item-editor">
+<div class="item-heading"><strong>Activity #{{ a.id }} — {{ a.name }}</strong><span class="tag">{{ a.activity_type }}</span>
+{% if a.is_start %}<span class="tag green">Start</span>{% endif %}{% if a.is_end %}<span class="tag green">End</span>{% endif %}</div>
+<p class="muted">{{ a.description }}</p>
+<p><a href="{{ url_for('application.impact_page',pid=process.id,aid=a.id) }}">Analyze downstream impact</a></p>
+<details><summary>Edit activity</summary>
+<form method="post" action="{{ url_for('application.activity_edit_form',pid=process.id,aid=a.id) }}">
+<label>Name<input name="name" value="{{ a.name }}" required></label>
+<label>Description<input name="description" value="{{ a.description }}"></label>
+<label>Type<select name="activity_type">{% for kind in ['task','decision','approval','output'] %}<option value="{{ kind }}" {% if a.activity_type==kind %}selected{% endif %}>{{ kind }}</option>{% endfor %}</select></label>
+<label>Condition<input name="condition_expression" value="{{ a.condition_expression }}" placeholder="true / false"></label>
+<button type="submit">Update activity</button>
+</form>
+<form method="post" action="{{ url_for('application.activity_delete_form',pid=process.id,aid=a.id) }}"><button class="danger" type="submit">Delete activity</button></form>
+</details>
+</div>
+{% endfor %}
+{% else %}<p class="muted">No activities added yet.</p>{% endif %}
 </section>
 
 <section class="panel">
-    <h2>Change scenarios</h2>
-
-    {% if activities %}
-
-    <form method="post"
-          action="{{ url_for('application.scenario_form', pid=process.id) }}">
-
-        <label>
-            Scenario name
-            <input type="text"
-                   name="name"
-                   required
-                   placeholder="Skip manual approval">
-        </label>
-
-        <label>
-            Target activity
-            <select name="activity_id" required>
-                {% for a in activities %}
-                <option value="{{ a.id }}">
-                    {{ a.name }}
-                </option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label>
-            Change type
-            <select name="change_type" required>
-                <option value="skip">Skip activity</option>
-                <option value="rename">Rename activity</option>
-                <option value="condition">Change execution condition</option>
-            </select>
-        </label>
-
-        <label>
-            New value
-            <input type="text"
-                   name="new_value"
-                   placeholder="true / false or new activity name">
-        </label>
-
-        <button type="submit">Save scenario</button>
-
-    </form>
-
-    {% else %}
-
-    <p class="muted">
-        Add activities before creating a change scenario.
-    </p>
-
-    {% endif %}
-
-    <h3>Saved scenarios</h3>
-
-    {% for sc in scenarios %}
-
-    <p>
-        <strong>{{ sc.name }}</strong>
-        —
-        <a href="{{ url_for('application.scenario_compare_page', pid=process.id, sid=sc.id) }}">
-            Compare original and modified simulation
-        </a>
-    </p>
-
-    {% else %}
-
-    <p class="muted">No scenarios saved yet.</p>
-
-    {% endfor %}
-
-    <p>
-        <a href="{{ url_for('application.api_export', pid=process.id) }}">
-            Export process JSON
-        </a>
-    </p>
-
+<h2>Dependencies</h2>
+{% if dependencies %}
+{% for d in dependencies %}
+{% set pred = (activities|selectattr("id","equalto",d.predecessor_id)|first) %}
+{% set succ = (activities|selectattr("id","equalto",d.successor_id)|first) %}
+<div class="item-editor">
+<strong>Dependency #{{ d.id }}: {{ pred.name if pred else d.predecessor_id }} → {{ succ.name if succ else d.successor_id }}</strong>
+{% if d.condition_expression %}<p class="muted">Condition: {{ d.condition_expression }}</p>{% endif %}
+<details><summary>Edit dependency</summary>
+<form method="post" action="{{ url_for('application.dependency_edit_form',pid=process.id,did=d.id) }}">
+<label>Predecessor<select name="predecessor_id">{% for a in activities %}<option value="{{ a.id }}" {% if a.id==d.predecessor_id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></label>
+<label>Successor<select name="successor_id">{% for a in activities %}<option value="{{ a.id }}" {% if a.id==d.successor_id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></label>
+<label>Condition<input name="condition_expression" value="{{ d.condition_expression }}"></label>
+<button type="submit">Update dependency</button>
+</form>
+<form method="post" action="{{ url_for('application.dependency_delete_form',pid=process.id,did=d.id) }}"><button class="danger" type="submit">Remove dependency</button></form>
+</details>
+</div>
+{% endfor %}
+{% else %}<p class="muted">No dependencies connected yet.</p>{% endif %}
 </section>
 
+<section class="panel">
+<h2>Change scenarios</h2>
+<form method="post" action="{{ url_for('application.scenario_form',pid=process.id) }}">
+<label>Scenario name<input name="name" required placeholder="Skip Manager Approval"></label>
+<label>Description<input name="description" placeholder="Describe the proposed change"></label>
+<label>Target type<select name="target_type"><option value="activity">Activity</option><option value="dependency">Dependency</option></select></label>
+<label>Target record ID<input name="target_id" type="number" min="1" required placeholder="See activity and dependency IDs above"></label>
+<p class="muted small">Use an activity ID or dependency ID. For a new dependency, choose Dependency, Add, and enter 0.</p>
+<label>Change type<select name="change_type"><option value="skip">Skip activity</option><option value="rename">Rename activity</option><option value="condition">Change condition</option><option value="remove">Remove dependency</option><option value="add">Add dependency (value as JSON: {"from":1,"to":2})</option></select></label>
+<label>New value<input name="new_value" placeholder="true / false / new name"></label>
+<button type="submit">Save scenario</button>
+</form>
+{% for sc in scenarios %}
+<div class="item-editor">
+<strong>{{ sc.name }}</strong><p class="muted">{{ sc.description }}</p>
+{% for change in sc.changes %}<p class="small">{{ change.target_type }} #{{ change.target_id }}: {{ change.change_type }} → {{ change.new_value }}</p>{% endfor %}
+<p><a href="{{ url_for('application.scenario_compare_page',pid=process.id,sid=sc.id) }}">Compare original and modified process</a></p>
+<details><summary>Edit scenario details</summary>
+<form method="post" action="{{ url_for('application.scenario_edit_form',pid=process.id,sid=sc.id) }}">
+<label>Name<input name="name" value="{{ sc.name }}" required></label><label>Description<input name="description" value="{{ sc.description }}"></label>
+<label>Target type<select name="target_type"><option value="activity">Activity</option><option value="dependency">Dependency</option></select></label>
+<label>Target record ID<input name="target_id" type="number" min="1" required></label>
+<label>Change type<select name="change_type"><option value="skip">Skip activity</option><option value="rename">Rename activity</option><option value="condition">Change condition</option><option value="remove">Remove dependency</option><option value="add">Add dependency</option></select></label>
+<label>New value<input name="new_value" placeholder="true / false / new name / JSON"></label>
+<button type="submit">Update scenario and change</button></form>
+<form method="post" action="{{ url_for('application.scenario_delete_form',pid=process.id,sid=sc.id) }}"><button class="danger" type="submit">Delete scenario</button></form>
+</details>
+</div>
+{% else %}<p class="muted">No scenarios saved yet.</p>{% endfor %}
+</section>
 {% endblock %}
