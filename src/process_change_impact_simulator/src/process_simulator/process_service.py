@@ -18,6 +18,6 @@ def add_activity(path, pid, payload):
     if errors:
         raise ValidationError(" ".join(errors))
     aid = repo.add_activity(path, pid, payload["name"].strip(),
-                            payload.get("description", "").strip(),
-                            payload.get("activity_type", "task"))
+        payload.get("description", "").strip(), payload.get("activity_type", "task"),
+        payload.get("condition_expression", "").strip())
     return next(a for a in repo.activities(path, pid) if a["id"] == aid)
