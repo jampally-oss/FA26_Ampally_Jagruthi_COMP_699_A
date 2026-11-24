@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Process Graph{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('application.process_detail',pid=process.id) }}">← Back to process</a></p>
+<h1>Process dependency graph</h1>
+<p class="muted">{{ process.name }}. Each box is an activity and each arrow is a dependency.</p>
+<section class="panel graph-panel">
+<svg viewBox="0 0 {{ width }} {{ height }}" role="img" aria-label="Directed process dependency graph">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker></defs>
+{% for edge in edges %}<line x1="{{ edge.x1 }}" y1="{{ edge.y1 }}" x2="{{ edge.x2 }}" y2="{{ edge.y2 }}" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>{% endfor %}
+{% for node in nodes %}
+<rect x="{{ node.x-76 }}" y="{{ node.y-30 }}" width="152" height="60" rx="10" fill="#eef4ff" stroke="#3567a8" stroke-width="2"/>
+<text x="{{ node.x }}" y="{{ node.y-3 }}" text-anchor="middle" font-size="12" fill="#172b4d">{{ node.name|truncate(20) }}</text>
+<text x="{{ node.x }}" y="{{ node.y+15 }}" text-anchor="middle" font-size="10" fill="#52647a">{{ node.kind }} #{{ node.id }}</text>
+{% endfor %}
+</svg>
+</section>
+<section class="panel"><h2>Activities and impact links</h2><ul>{% for node in nodes %}<li>{{ node.name }} — <a href="{{ url_for('application.impact_page',pid=process.id,aid=node.id) }}">Analyze downstream impact</a></li>{% endfor %}</ul></section>
+{% endblock %}
